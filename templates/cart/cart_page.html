@@ -21,7 +21,7 @@
         </div>
     {% endif %}
 
-    {% if cart %}
+    {% if cart and cart.cart_items.all %}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -51,7 +51,7 @@
                 {% endfor %}
                 <tr>
                     <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                    <td colspan="2" id="cart-total">₹{{ cart.get_cart_total }}</td>
+                    <td colspan="2" id="cart-total">₹{{ cart.get_cart_total|default_if_none:"0.00" }}</td>
                 </tr>
             </tbody>
         </table>

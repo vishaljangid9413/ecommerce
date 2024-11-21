@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 from cart.models import CartItem
 from .models import Category, Product
@@ -81,7 +82,7 @@ def product_list(request, pk):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    cart= CartItem.objects.filter(cart__user=request.user).values_list('product__id', flat=True)
+    cart= CartItem.objects.filter(cart__user=request.user, cart__status="open").values_list('product__id', flat=True)
     return render(request, 'products/product_list.html', {'products': page_obj, 'cart': cart})
 
 
@@ -116,7 +117,7 @@ def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     
     # Example logic for cart
-    cart = CartItem.objects.filter(cart__user=request.user).values_list('product__id', flat=True)
+    cart = CartItem.objects.filter(cart__user=request.user, cart__status="open").values_list('product__id', flat=True)
     
     # Fetch related products (same category, excluding current product)
     related_products = Product.objects.filter(category=product.category).exclude(id=product.id)[:4]
@@ -147,3 +148,37 @@ def delete_product(request, pk):
         return redirect('/categories/')
     
     
+@login_required
+def search_view(request):
+    query = request.GET.get('q', '').strip()
+    product_results = []
+    category_results = []
+
+    if query:
+        # Search products
+        product_results = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(category__name__icontains=query) | 
+            Q(description__icontains=query) | 
+            Q(product_tags__tag__name__icontains=query)
+            )
+
+        # Search categories
+        category_results = Category.objects.filter(name__icontains=query)
+
+    # Pagination for products
+    product_paginator = Paginator(product_results, 5)  # 5 products per page
+    product_page = request.GET.get('product_page')
+    paginated_products = product_paginator.get_page(product_page)
+
+    # Pagination for categories
+    category_paginator = Paginator(category_results, 5)  # 5 categories per page
+    category_page = request.GET.get('category_page')
+    paginated_categories = category_paginator.get_page(category_page)
+
+    context = {
+        'query': query,
+        'paginated_products': paginated_products,
+        'paginated_categories': paginated_categories,
+    }
+    return render(request, 'products/search_results.html', context)

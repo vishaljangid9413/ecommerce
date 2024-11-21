@@ -153,7 +153,7 @@ def get_otp(request):
         email = request.GET.get("email")
         data = json.loads(request.body)
         email = data['email']
-        print("email::", email, request.body)
+        print("Note::", email)
         try:            
             otp = OTPHandler.generate_otp(email) 
             print("OTP: ",otp)

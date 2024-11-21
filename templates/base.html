@@ -12,45 +12,60 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-light">
-        <div class="container-fluid">
+      <div class="container-fluid">
           <a class="navbar-brand" href="/categories/">E-commerce</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+              <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/categories/">Categories</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/cart/">Cart</a>
-              </li>
-              {% if request.user.is_superuser %}
-                <li class="nav-item">
-                  <a class="nav-link active" aria-current="page" href="/users/">Users</a>
-                </li>
-              {% endif %}
-            </ul>
-            <ul class="navbar-nav mb-2 mb-lg-0">
-              {% if not request.user.is_authenticated %}
-                <li class="nav-item">
-                  <a class="nav-link" href="/login/"> Login</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/register/">Register</a>
-                </li>
-              {% else %}
-                <li class="nav-item">
-                  <a class="nav-link" href="/profile/" style="color:purple;">Profile</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="/logout/">Logout</a>
-                </li>
-              {% endif %}
-            </ul>
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                  <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="/categories/">Categories</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link active" aria-current="page" href="/cart/">Cart</a>
+                  </li>
+                  {% if request.user.is_superuser %}
+                      <li class="nav-item">
+                          <a class="nav-link active" aria-current="page" href="/users/">Users</a>
+                      </li>
+                  {% endif %}
+              </ul>
+              <!-- Search bar -->
+              <form class="d-flex" method="get" action="{% url 'search_results' %}">
+                  <input 
+                      class="form-control me-2" 
+                      type="search" 
+                      name="q" 
+                      placeholder="Search products, categories..." 
+                      aria-label="Search"
+                      required
+                      value="{{ query }}"
+                  >
+                  <button class="btn btn-outline-success" type="submit">Search</button>
+                  <a class="btn btn-outline-secondary" href="/categories/">Clear</a>
+              </form>
+              <ul class="navbar-nav mb-2 mb-lg-0">
+                  {% if not request.user.is_authenticated %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="/login/"> Login</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/register/">Register</a>
+                      </li>
+                  {% else %}
+                      <li class="nav-item">
+                          <a class="nav-link" href="/profile/" style="color:purple;">Profile</a>
+                      </li>
+                      <li class="nav-item">
+                          <a class="nav-link" href="/logout/">Logout</a>
+                      </li>
+                  {% endif %}
+              </ul>
           </div>
-        </div>
-      </nav>
+      </div>
+  </nav>
+  
       <div>
         {% block content %}{% endblock content %}
 
