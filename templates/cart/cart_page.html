@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Your Cart</h2>
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                <div class="alert alert-success alert-dismissible fade show  w-75 mx-auto " role="alert" >
+                        <strong>Well Done!</strong> {{message|linebreaks}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% elif message.tags == "error" %}
+                <div class="alert alert-danger alert-dismissible fade show  w-75 mx-auto " role="alert" >
+                        <strong>Oops!</strong> {{message|linebreaks}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if cart %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% csrf_token %}
+                {% for item in cart.cart_items.all %}
+                <tr id="product-{{ item.product.id }}">
+                    <td>{{ item.product.name }}</td>
+                    <td>₹{{ item.product.price }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary decrease" data-product-id="{{ item.product.id }}">-</button>
+                        <span id="quantity-{{ item.product.id }}">{{ item.quantity }}</span>
+                        <button class="btn btn-sm btn-secondary increase" data-product-id="{{ item.product.id }}">+</button>
+                    </td>
+                    <td id="subtotal-{{ item.product.id }}">₹{{ item.get_total }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-danger remove" data-product-id="{{ item.product.id }}">Remove</button>
+                    </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                    <td colspan="2" id="cart-total">₹{{ cart.get_cart_total }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="text-end">
+            <a href="{% url 'thank_you' %}" class="btn btn-success">Checkout</a>
+        </div>
+    {% else %}
+        <div class="container">
+            <p>Your cart is empty. <a href="{% url 'category_list' %}">Continue shopping</a>.</p>
+            <img 
+                src="{{ '/static/img/empty_cart.png' }}" 
+                alt="Empty Products" 
+                class="empty-product-img"
+            >
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Update quantity in the cart
+    function updateCart(productId, action) {
+        fetch(`/cart/update/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.quantity === 0) {
+                    // Remove the product row if quantity is zero
+                    document.getElementById(`product-${productId}`).remove();
+                } else {
+                    // Update the quantity and subtotal
+                    document.getElementById(`quantity-${productId}`).textContent = data.quantity;
+    
+                    if (data.subtotal !== undefined) {
+                        document.getElementById(`subtotal-${productId}`).textContent = `₹${parseFloat(data.subtotal).toFixed(2)}`;
+                    }
+                }
+    
+                // Update the cart total
+                if (data.cart_total !== undefined) {
+                    document.getElementById('cart-total').textContent = `₹${parseFloat(data.cart_total).toFixed(2)}`;
+                }}
+        })
+        .catch(error => console.error('Error updating cart:', error));
+    }
+
+    // Attach event listeners to buttons
+    document.addEventListener('DOMContentLoaded', function () {
+        // Increase quantity
+        document.querySelectorAll('.increase').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.getAttribute('data-product-id');
+                updateCart(productId, 'increase');
+            });
+        });
+
+        // Decrease quantity
+        document.querySelectorAll('.decrease').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.getAttribute('data-product-id');
+                updateCart(productId, 'decrease');
+            });
+        });
+
+        // Remove product
+        document.querySelectorAll('.remove').forEach(button => {
+            button.addEventListener('click', function () {
+                const productId = this.getAttribute('data-product-id');
+                updateCart(productId, 'remove');
+            });
+        });
+    });
+</script>
+{% endblock %}

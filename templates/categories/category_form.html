@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">{{ action }} Category</h2>
+    {% if messages %}
+        <div>
+            {% for message in messages %}
+                {% if message.tags == "success" %}
+                <div class="alert alert-success alert-dismissible fade show  w-75 mx-auto " role="alert" >
+                        <strong>Well Done!</strong> {{message|linebreaks}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% elif message.tags == "error" %}
+                <div class="alert alert-danger alert-dismissible fade show  w-75 mx-auto " role="alert" >
+                        <strong>Oops!</strong> {{message|linebreaks}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="mb-3">
+                    <label for="name" class="form-label">{{ form.name.label }}</label>
+                    {{ form.name }}
+                    <div class="form-text text-danger">{{ form.name.errors }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">{{ form.image.label }}</label>
+                    {{ form.image }}
+                    <div class="form-text text-danger">{{ form.image.errors }}</div>
+                </div>
+                <div class="mb-3">
+                    <label for="parent" class="form-label">{{ form.parent.label }}</label>
+                    {{ form.parent }}
+                    <div class="form-text text-danger">{{ form.parent.errors }}</div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'category_list' %}" class="btn btn-secondary">Back to Categories</a>
+                    <button type="submit" class="btn btn-primary">{{ action }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

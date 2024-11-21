@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container text-center mt-5">
+    <div class="card shadow p-4">
+        <div class="card-body">
+            <img src="{% static 'img/thank-you.png' %}" alt="Thank You" class="img-fluid mb-4" style="max-height: 150px;">
+            <h1 class="text-success">Thank You!</h1>
+            <p class="lead mt-3">Your order has been placed successfully.</p>
+            <p class="text-muted">A confirmation email has been sent to your registered email address.</p>
+            <a href="{% url 'category_list' %}" class="btn btn-primary mt-4">Continue Shopping</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

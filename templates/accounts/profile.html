@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-4" style="border-radius: 10px;background: linear-gradient(to bottom, #ffffff, #f1f1f1);">
+        <div class="row justify-content-center g-0">
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title">Profile Details</h5>
+                    <hr>
+                    <ul class="list-group">
+                        <li class="list-group-item"><strong>Name:</strong> {{ user.name|default:"Not Provided" }}</li>
+                        <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+                        <li class="list-group-item"><strong>Mobile:</strong> {{ user.mobile }}</li>
+                        <li class="list-group-item"><strong>Member Since:</strong> {{ user.registration_datetime|date:"F d, Y" }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
