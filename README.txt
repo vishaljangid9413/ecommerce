@@ -53,7 +53,7 @@ Once the environment is activated, your terminal prompt should change to indicat
 
 ### 4. Install Project Dependencies
 
-Install the required dependencies from `requirements.txt` using pip:
+Install the required dependencies from `Pipfile.txt` using pip:
 
 ```bash
 pipenv install
@@ -61,7 +61,7 @@ pipenv install
 
 ### 5. Set Up Environment Variables
 
-Make sure to create a `.env` file in the root directory to store sensitive information such as your secret key, database credentials, etc. You can copy from `.env.example` if provided.
+Make sure to create a `.env` file in the root directory to store sensitive information such as your secret key, database credentials, etc. You can copy from example below and replaces the valid values.
 
 ```env
 PROJECT_KEY='your project secret key'
@@ -78,6 +78,11 @@ ENV_EMAIL_HOST_PASSWORD='your email app password'
 Run the migrations to set up your database schema:
 
 ```bash
+python manage.py makemigrations
+
+# if show "No Changes detected" use this
+python .\manage.py makemigrations accounts cart logs products
+
 python manage.py migrate
 ```
 
@@ -117,7 +122,7 @@ To fill your database with dummy data, run the following command:
 python manage.py fill_dummy_data
 ```
 
-This will populate your `Category`, `Tag`, `Product`, and `Cart` models with sample data.
+This will populate your `Category`, `Tag` and `Product` models with sample data.
 
 ---
 
